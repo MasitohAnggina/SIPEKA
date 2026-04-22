@@ -27,6 +27,8 @@ interface NavItem {
 
 interface SidebarProps {
   activePage: string;
+  userName?: string;
+  userRole?: string;
 }
 
 const navItems: NavItem[] = [
@@ -49,7 +51,6 @@ const navItems: NavItem[] = [
     children: [
       { label: "Booking Layanan", href: "/layanan/booking" },
       { label: "Riwayat Layanan", href: "/layanan/riwayat" },
-      { label: "Persetujuan Medis", href: "/layanan/persetujuan" },
     ],
   },
   {
@@ -60,7 +61,11 @@ const navItems: NavItem[] = [
   },
 ];
 
-export default function Sidebar({ activePage }: SidebarProps) {
+export default function Sidebar({
+  activePage,
+  userName = "Angel",
+  userRole = "Pemilik Hewan",
+}: SidebarProps) {
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 
   const toggleMenu = (key: string) => {
@@ -68,6 +73,14 @@ export default function Sidebar({ activePage }: SidebarProps) {
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   };
+
+  // Ambil inisial dari nama untuk avatar
+  const initials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <aside
@@ -106,13 +119,15 @@ export default function Sidebar({ activePage }: SidebarProps) {
         </span>
       </div>
 
-      {/* Nav + Logout semuanya di sini */}
+      {/* Nav — flex-grow supaya mendorong user info ke bawah */}
       <nav
         style={{
           padding: "16px 12px",
           display: "flex",
           flexDirection: "column",
           gap: "2px",
+          flexGrow: 1,
+          overflowY: "auto",
         }}
       >
         {navItems.map((item) => {
@@ -152,9 +167,7 @@ export default function Sidebar({ activePage }: SidebarProps) {
                     e.currentTarget.style.color = "#555";
                   }}
                 >
-                  <Icon
-                    style={{ width: "16px", height: "16px", flexShrink: 0 }}
-                  />
+                  <Icon style={{ width: "16px", height: "16px", flexShrink: 0 }} />
                   <span style={{ flex: 1 }}>{item.label}</span>
                   <ChevronDown
                     style={{
@@ -206,17 +219,12 @@ export default function Sidebar({ activePage }: SidebarProps) {
                           }}
                           onMouseLeave={(e) => {
                             if (!isChildActive) {
-                              e.currentTarget.style.backgroundColor =
-                                "transparent";
+                              e.currentTarget.style.backgroundColor = "transparent";
                               e.currentTarget.style.color = "#666";
                             }
                           }}
                         >
-                          <span
-                            style={{
-                              color: isChildActive ? "#ffffff" : "#aaa",
-                            }}
-                          >
+                          <span style={{ color: isChildActive ? "#ffffff" : "#aaa" }}>
                             •
                           </span>{" "}
                           {child.label}
@@ -266,7 +274,7 @@ export default function Sidebar({ activePage }: SidebarProps) {
           );
         })}
 
-        {/* Logout tepat di bawah Profile */}
+        {/* Logout */}
         <button
           style={{
             display: "flex",
@@ -295,6 +303,67 @@ export default function Sidebar({ activePage }: SidebarProps) {
           Logout
         </button>
       </nav>
+
+      {/* ── User Info — selalu nempel di kiri bawah ── */}
+      <div
+        style={{
+          padding: "12px 16px",
+          borderTop: "1px solid #f0f0f0",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        {/* Avatar lingkaran dengan inisial */}
+        <div
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(46, 125, 50, 0.15)",
+            border: "2px solid rgba(46, 125, 50, 0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "13px",
+            fontWeight: 700,
+            color: "#2d7a3a",
+            flexShrink: 0,
+          }}
+        >
+          {initials}
+        </div>
+
+        {/* Nama & Role */}
+        <div style={{ overflow: "hidden" }}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "13px",
+              fontWeight: 700,
+              color: "#1a1a1a",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {userName}
+          </p>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "11px",
+              fontWeight: 400,
+              color: "#888",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {userRole}
+          </p>
+        </div>
+      </div>
     </aside>
   );
 }

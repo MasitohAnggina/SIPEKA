@@ -10,9 +10,6 @@ export interface BookingPDFData {
     breed: string;
     type: string;
     serviceName: string;
-    servicePrice: string;
-    doctorName: string;
-    doctorRole: string;
     note?: string;
   }>;
 }
@@ -37,7 +34,7 @@ export function useBookingPDF() {
       });
     };
 
-    // Header Banner
+    // ── Header Banner ──────────────────────────────────────────────────────────
     doc.setFillColor(GREEN);
     doc.rect(0, 0, W, 28, "F");
 
@@ -63,7 +60,7 @@ export function useBookingPDF() {
     doc.text("Sistem Informasi Pelayanan Klinik Hewan", 10, 20);
     doc.text("Tiket Antrian Booking", 10, 26);
 
-    // No. Antrian box
+    // ── No. Antrian box ────────────────────────────────────────────────────────
     const boxX = W - 42;
     const boxW = 36;
     const boxCenterX = boxX + boxW / 2;
@@ -79,7 +76,7 @@ export function useBookingPDF() {
     doc.setFontSize(22);
     doc.text(String(data.queueNumber).padStart(3, "0"), boxCenterX, 21, { align: "center" });
 
-    // Booking Info Block
+    // ── Booking Info Block ─────────────────────────────────────────────────────
     let y = 34;
 
     doc.setFillColor(LIGHTGREEN);
@@ -89,7 +86,7 @@ export function useBookingPDF() {
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
     doc.text("No. Booking", 14, y + 7);
-    doc.text("Tanggal", 70, y + 7);
+    doc.text("Tanggal", 60, y + 7);
     doc.text("Jam", W - 30, y + 7);
 
     doc.setTextColor(DARKTEXT);
@@ -97,7 +94,7 @@ export function useBookingPDF() {
     doc.setFont("helvetica", "bold");
     doc.text(`#${data.bookingNumber}`, 14, y + 16);
     doc.setFontSize(9);
-    doc.text(fmtDate(data.date), 70, y + 16, { maxWidth: 50 });
+    doc.text(fmtDate(data.date), 60, y + 16, { maxWidth: 56 });
     doc.text(`${data.time} WIB`, W - 30, y + 16);
 
     y += 28;
@@ -107,6 +104,7 @@ export function useBookingPDF() {
     doc.line(8, y, W - 8, y);
     y += 6;
 
+    // ── Detail Hewan & Layanan ─────────────────────────────────────────────────
     doc.setTextColor(GREEN);
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
@@ -114,78 +112,66 @@ export function useBookingPDF() {
     y += 6;
 
     data.pets.forEach((pet, i) => {
+      const cardH = pet.note ? 32 : 26;
+
       doc.setFillColor(i % 2 === 0 ? "#f9f9f9" : "#ffffff");
-      const cardH = pet.note ? 38 : 32;
       doc.roundedRect(8, y, W - 16, cardH, 2, 2, "F");
       doc.setDrawColor(LINE);
       doc.setLineWidth(0.2);
       doc.roundedRect(8, y, W - 16, cardH, 2, 2, "S");
 
+      // Aksen garis hijau kiri
       doc.setFillColor(GREEN);
       doc.rect(8, y, 2.5, cardH, "F");
 
+      // Nama hewan
       doc.setTextColor(DARKTEXT);
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
       doc.text(`${pet.name}`, 15, y + 8);
 
+      // Jenis & ras
       doc.setTextColor(GRAY);
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
       doc.text(`${pet.type} · ${pet.breed}`, 15, y + 14);
 
+      // Badge layanan
       doc.setFillColor(LIGHTGREEN);
-      doc.roundedRect(14, y + 17, 58, 7, 2, 2, "F");
+      doc.roundedRect(14, y + 17, 70, 7, 2, 2, "F");
       doc.setTextColor(GREEN);
       doc.setFontSize(7.5);
       doc.setFont("helvetica", "bold");
       doc.text(`Layanan: ${pet.serviceName}`, 16, y + 22);
 
-      doc.setTextColor(GREEN);
-      doc.setFontSize(8);
-      doc.setFont("helvetica", "bold");
-      doc.text(pet.servicePrice, W - 10, y + 9, { align: "right" });
-
-      doc.setTextColor(GRAY);
-      doc.setFontSize(7.5);
-      doc.setFont("helvetica", "normal");
-      doc.text(`Dokter: ${pet.doctorName} (${pet.doctorRole})`, W - 10, y + 16, { align: "right" });
-
+      // Catatan (opsional)
       if (pet.note) {
         doc.setTextColor("#888888");
         doc.setFontSize(7);
-        doc.text(`Catatan: ${pet.note}`, 16, y + 32, { maxWidth: W - 30 });
+        doc.setFont("helvetica", "normal");
+        doc.text(`Catatan: ${pet.note}`, 16, y + 29, { maxWidth: W - 30 });
       }
 
       y += cardH + 4;
     });
 
-    y += 2;
-    doc.setFillColor(GREEN);
-    doc.roundedRect(8, y, W - 16, 12, 2, 2, "F");
-    doc.setTextColor("#ffffff");
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Total Estimasi Biaya (${data.pets.length} hewan)`, 14, y + 8);
-    const prices = data.pets.map((p) => p.servicePrice).join(" + ");
-    doc.text(prices, W - 10, y + 8, { align: "right" });
+    y += 4;
 
-    y += 18;
-
+    // ── Footer info ────────────────────────────────────────────────────────────
     doc.setFillColor("#e3f2fd");
-    doc.roundedRect(8, y, W - 16, 14, 2, 2, "F");
+    doc.roundedRect(8, y, W - 16, 12, 2, 2, "F");
     doc.setTextColor("#1565c0");
     doc.setFontSize(7.5);
     doc.setFont("helvetica", "normal");
-    const notice = "Tunjukkan tiket ini saat tiba di klinik. Jika dokter memerlukan tindakan mendadak, notifikasi persetujuan akan dikirim via aplikasi.";
-    const lines = doc.splitTextToSize(notice, W - 24);
-    doc.text(lines, 14, y + 6);
+    const notice = "Tunjukkan tiket ini kepada petugas saat tiba di klinik.";
+    doc.text(notice, 14, y + 8);
 
-    y += 20;
+    y += 18;
 
     doc.setDrawColor(LINE);
     doc.line(8, y, W - 8, y);
     y += 5;
+
     doc.setTextColor(GRAY);
     doc.setFontSize(7);
     doc.setFont("helvetica", "normal");
