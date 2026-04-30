@@ -1,10 +1,15 @@
 {
+<<<<<<< HEAD
   "name": "sipeka",
+=======
+  "name": "pblsipeka",
+>>>>>>> b8a024d46fb2353846bcc88041422a5031e99580
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+<<<<<<< HEAD
     "start": "next start"
   },
   "dependencies": {
@@ -22,6 +27,25 @@
     "autoprefixer": "^10.4.27",
     "postcss": "^8",
     "tailwindcss": "^4.2.2",
+=======
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "lucide-react": "^1.8.0",
+    "next": "16.2.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "tailwindcss": "^4",
+>>>>>>> b8a024d46fb2353846bcc88041422a5031e99580
     "typescript": "^5"
   }
 }
